@@ -22,6 +22,22 @@
 	<dependencies>
 
 		<dependency>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<groupId>org.springframework.boot</groupId>
+				</exclusion>
+			</exclusions>
+			<groupId>org.springframework.boot</groupId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
+		<dependency>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<version>2.8.11</version>

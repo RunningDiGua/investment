@@ -1,4 +1,4 @@
-package com.tilen.investment;
+package com.tilen.investment.zhuanzhai;
 
 import java.util.ArrayList;
 import java.util.List;
