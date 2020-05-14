@@ -1,5 +1,9 @@
 package com.tilen.investment.common;
 
+import com.tilen.investment.common.excel.ExcelColumnType;
+import com.tilen.investment.common.excel.ExcelColumnTypeHandler;
+import com.tilen.investment.common.excel.format.IFormat;
+import com.tilen.investment.common.excel.format.ZhuanZhaiFormat;
 import com.tilen.investment.zhuanzhai.ZhuanZhaiHttpResp;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
@@ -22,34 +26,34 @@ public class ExcelUtil {
   // private static String testList =
   //
   public static final String SALES_DATA_TITLE = "可转债数据表";
-  public static List<Pair<String, String>> headList = new ArrayList<>();
-
-  static {
-    headList.add(new Pair<>("代码", "bond_id"));
-    headList.add(new Pair<>("转债名称", "bond_nm"));
-    headList.add(new Pair<>("现价", "price"));
-    headList.add(new Pair<>("涨跌幅", "increase_rt"));
-    headList.add(new Pair<>("正股名称", "stock_nm"));
-    headList.add(new Pair<>("正股价", "sprice"));
-    headList.add(new Pair<>("正股涨跌", "sincrease_rt"));
-    headList.add(new Pair<>("PB", "pb"));
-    headList.add(new Pair<>("转股价", "convert_price"));
-    headList.add(new Pair<>("转股价值", "convert_value"));
-    headList.add(new Pair<>("溢价率", "premium_rt"));
-    // headList.add(new Pair<>("纯债价值",""));
-    headList.add(new Pair<>("评级", "rating_cd"));
-    // headList.add(new Pair<>("期权价值",""));
-    headList.add(new Pair<>("回售触发价", "put_convert_price"));
-    headList.add(new Pair<>("强赎触发价", "force_redeem_price"));
-    headList.add(new Pair<>("转股开始日期", "convert_dt"));
-    headList.add(new Pair<>("转股结束日期", "maturity_dt"));
-    // headList.add(new Pair<>("转债占比",""));
-    headList.add(new Pair<>("到期时间", "short_maturity_dt"));
-    headList.add(new Pair<>("剩余年限", "year_left"));
-    headList.add(new Pair<>("到期税前收益率", "ytm_rt"));
-    headList.add(new Pair<>("双底", "dblow"));
-    headList.add(new Pair<>("转股说明", "convert_cd_tip"));
-  }
+  // public static List<Pair<String, String>> headList = new ArrayList<>();
+  //
+  // static {
+  //   headList.add(new Pair<>("代码", "bond_id"));
+  //   headList.add(new Pair<>("转债名称", "bond_nm"));
+  //   headList.add(new Pair<>("现价", "price"));
+  //   headList.add(new Pair<>("涨跌幅", "increase_rt"));
+  //   headList.add(new Pair<>("正股名称", "stock_nm"));
+  //   headList.add(new Pair<>("正股价", "sprice"));
+  //   headList.add(new Pair<>("正股涨跌", "sincrease_rt"));
+  //   headList.add(new Pair<>("PB", "pb"));
+  //   headList.add(new Pair<>("转股价", "convert_price"));
+  //   headList.add(new Pair<>("转股价值", "convert_value"));
+  //   headList.add(new Pair<>("溢价率", "premium_rt"));
+  //   // headList.add(new Pair<>("纯债价值",""));
+  //   headList.add(new Pair<>("评级", "rating_cd"));
+  //   // headList.add(new Pair<>("期权价值",""));
+  //   headList.add(new Pair<>("回售触发价", "put_convert_price"));
+  //   headList.add(new Pair<>("强赎触发价", "force_redeem_price"));
+  //   headList.add(new Pair<>("转股开始日期", "convert_dt"));
+  //   headList.add(new Pair<>("转股结束日期", "maturity_dt"));
+  //   // headList.add(new Pair<>("转债占比",""));
+  //   headList.add(new Pair<>("到期时间", "short_maturity_dt"));
+  //   headList.add(new Pair<>("剩余年限", "year_left"));
+  //   headList.add(new Pair<>("到期税前收益率", "ytm_rt"));
+  //   headList.add(new Pair<>("双底", "dblow"));
+  //   headList.add(new Pair<>("转股说明", "convert_cd_tip"));
+  // }
 
   public static void main(String[] args) {
     //
@@ -65,10 +69,11 @@ public class ExcelUtil {
     String toString = IOUtils.resourceToString("/test.txt", Charset.defaultCharset());
     ZhuanZhaiHttpResp zhuanzhai = JsonMapper.getObj(toString, ZhuanZhaiHttpResp.class);
     List<ZhuanZhaiHttpResp.Row> rows = zhuanzhai.getRows();
-
-    getWorkbook(rows);
-    HSSFWorkbook workbook = getWorkbook(rows);
-    workbook.write(new File("/Users/tilenmac/desktop/测试导出.xls"));
+    //
+    ZhuanZhaiFormat iFormat = new ZhuanZhaiFormat();
+    HSSFWorkbook workbook = getWorkbook(zhuanzhai.getRows(), new ZhuanZhaiFormat());
+    workbook.write(
+        new File("/Users/wangchangdong/desktop/测试导出" + System.currentTimeMillis() + ".xls"));
   }
 
   /**
@@ -76,7 +81,8 @@ public class ExcelUtil {
    *
    * @return
    */
-  public static HSSFWorkbook getWorkbook(List<ZhuanZhaiHttpResp.Row> list) {
+  public static HSSFWorkbook getWorkbook(
+      List<ZhuanZhaiHttpResp.Row> list, IFormat<Pair, ExcelColumnType> iFormat) {
     HSSFWorkbook workbook = new HSSFWorkbook();
     HSSFSheet sheet = workbook.createSheet(SALES_DATA_TITLE);
     Integer rowStart = 0;
@@ -87,13 +93,14 @@ public class ExcelUtil {
     HSSFCellStyle columnTopStyle = Style.getColumnTopStyle(workbook);
 
     // 将列头设置到sheet的单元格中
-    int columnNum = headList.size();
+    int columnNum = iFormat.getColumnList().size();
+    List<Pair> headList = iFormat.getColumnList();
     for (int i = 0; i < columnNum; i++) {
       // 创建列头对应个数的单元格
       HSSFCell cellRowName = rowRowName.createCell(i);
       // 设置列头单元格的数据类型
       cellRowName.setCellType(CellType.STRING);
-      HSSFRichTextString text = new HSSFRichTextString(headList.get(i).getKey());
+      HSSFRichTextString text = new HSSFRichTextString((String) headList.get(i).getKey());
       // 设置列头单元格的值
       cellRowName.setCellValue(text);
       // 设置列头单元格样式
@@ -115,13 +122,24 @@ public class ExcelUtil {
         HSSFRow row = sheet.createRow(rowNum);
         for (int cr = 0; cr < headList.size(); cr++) {
           ZhuanZhaiHttpResp.Cell icell = list.get(i).getCell();
-          Object value = ClassUtil.getValue(icell, "get", headList.get(cr).getValue());
+          Object value = ClassUtil.getValue(icell, "get", (String) headList.get(cr).getValue());
           String content = (String) value;
-          combineCell(sheet, row, style, content, rowNum, rowNum, cr, cr, true);
+          combineCell(
+              workbook,
+              sheet,
+              row,
+              style,
+              content,
+              rowNum,
+              rowNum,
+              cr,
+              cr,
+              true,
+              iFormat.getFormat(headList.get(cr)));
         }
       }
     }
-    Style.beautifySheet(sheet, columnNum);
+    Style.beautifySheet(sheet, headList.size());
     return workbook;
   }
 
@@ -149,6 +167,7 @@ public class ExcelUtil {
    * @return
    */
   public static HSSFSheet combineCell(
+      HSSFWorkbook workbook,
       HSSFSheet sheet,
       HSSFRow row,
       HSSFCellStyle style,
@@ -157,12 +176,14 @@ public class ExcelUtil {
       Integer lastRow,
       Integer firstCol,
       Integer lastCol,
-      Boolean combine) {
+      Boolean combine,
+      ExcelColumnType type) {
     if (!Objects.equals(firstRow, lastRow)) {
       CellRangeAddress range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
       sheet.addMergedRegion(range);
       HSSFCell cellObj = row.createCell(firstCol);
-      cellObj.setCellValue(content);
+      ExcelColumnTypeHandler.handle(workbook, cellObj, content, type);
+      // cellObj.setCellValue(content);
 
       //      CellStyle cs = workbook.createCellStyle();
       //      cs.setAlignment(HorizontalAlignment.CENTER);
@@ -171,7 +192,8 @@ public class ExcelUtil {
 
     } else {
       HSSFCell cellObj = row.createCell(firstCol);
-      cellObj.setCellValue(content);
+      ExcelColumnTypeHandler.handle(workbook, cellObj, content, type);
+      // cellObj.setCellValue(content);
       //      Style.setCell(row, content, firstCol, style);
     }
     return sheet;

@@ -36,19 +36,12 @@ import org.springframework.util.StringUtils;
 import static org.apache.http.impl.client.HttpClients.createDefault;
 
 /** @Author chaoyu.wang@causascloud.cn @Date 2019/12/13 14:10 @Desc */
-@Component
 @Slf4j
 public class HttpClient {
   private static final int SOCKET_DEFAULT_TIMEOUT = 3000;
   private static final int CONNECT_DEFAULT_TIMEOUT = 3000;
   public static String proxyUrl;
   public static boolean isIdc = false;
-
-  @Value("${httpclient.proxyUrl}")
-  private String _proxyUrl;
-
-  @Value("${httpclient.proxyUrl2}")
-  private String _proxyUrl2;
 
   public static String doPut(String url, Map<String, String> params, Map<String, Object> headers)
       throws IOException {
@@ -404,36 +397,6 @@ public class HttpClient {
       }
     }
     System.out.println(bytes);
-  }
-
-  public String doPost(String url, Map<String, String> params) throws IOException {
-    try {
-      return doPost(url, params, null, _proxyUrl2);
-    } catch (Exception e) {
-      return doPost(url, params, null, _proxyUrl);
-    }
-  }
-
-  public String doPost(String url, String params, Map<String, Object> headers) throws IOException {
-    if (!isIdc) {
-      return handlePost(url, params, headers, null);
-    }
-    try {
-      return handlePost(url, params, headers, _proxyUrl2);
-    } catch (Exception e) {
-      return handlePost(url, params, headers, _proxyUrl);
-    }
-  }
-
-  public String doUpload(String url, byte[] bytes, Map<String, Object> headers) throws IOException {
-    if (!isIdc) {
-      return handleUpload(url, bytes, headers, null);
-    }
-    try {
-      return handleUpload(url, bytes, headers, _proxyUrl2);
-    } catch (Exception e) {
-      return handleUpload(url, bytes, headers, _proxyUrl);
-    }
   }
 
   public String doPost(

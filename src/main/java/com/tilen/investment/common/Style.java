@@ -18,6 +18,8 @@ public class Style {
   }
 
   public static void beautifySheet(HSSFSheet sheet, int columnNum) {
+    // 冻结首行
+    sheet.createFreezePane(0, 1, 0, 1);
     // 让列宽随着导出的列长自动适应
     for (int colNum = 0; colNum < columnNum; colNum++) {
       int columnWidth = sheet.getColumnWidth(colNum) / 256;
@@ -32,7 +34,7 @@ public class Style {
         if (currentRow.getCell(colNum) != null) {
           HSSFCell currentCell = currentRow.getCell(colNum);
           if (currentCell.getCellType() == CellType.STRING) {
-            int length = currentCell.getStringCellValue().getBytes().length;
+            int length = currentCell.getStringCellValue().getBytes().length / 6;
             if (columnWidth < length) {
               columnWidth = length;
             }
@@ -40,9 +42,9 @@ public class Style {
         }
       }
       int width = (columnWidth + 4) * 256;
-      if (colNum == 0) {
-        width = 11264;
-      }
+      // if (colNum == 0) {
+      //   width = 11264;
+      // }
       sheet.setColumnWidth(colNum, width);
     }
   }

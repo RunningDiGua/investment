@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
 public class ClassUtil {
   private ClassUtil() {
@@ -31,6 +32,8 @@ public class ClassUtil {
     Class<?> objClass = targetObj.getClass();
     try {
       Method method = objClass.getMethod(getMethodName, new Class[] {});
+      Class<?> returnType = method.getReturnType();
+      String name = returnType.getName();
       Object invoke = method.invoke(targetObj);
       return invoke;
     } catch (NoSuchMethodException e) {
@@ -43,10 +46,20 @@ public class ClassUtil {
     return null;
   }
 
+  @Data
+  static class Man {
+    private String name;
+    private int age;
+  }
+
   public static void main(String[] args) {
-    ZhuanZhaiHttpResp.Cell cell = new ZhuanZhaiHttpResp.Cell();
-    cell.setBond_id("12345");
-    Object value = getValue(cell, "get", "bond_id");
+    // ZhuanZhaiHttpResp.Cell cell = new ZhuanZhaiHttpResp.Cell();
+    // cell.setBond_id("12345");
+    // Object value = getValue(cell, "get", "bond_id");
+    Man man = new Man();
+    man.setAge(12);
+    man.setName("name");
+    Object value = getValue(man, "get", "age");
     System.out.println(value);
   }
   /**
