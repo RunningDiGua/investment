@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-import com.tilen.investment.zhuanzhai.ZhuanZhaiHttpResp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +27,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.util.ArrayUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import sun.jvm.hotspot.opto.Node_Array;
 
 @SpringBootApplication
 public class InvestmentApplication {
@@ -36,6 +34,9 @@ public class InvestmentApplication {
   public static void main(String[] args) throws IOException {
     // testStock();
     SpringApplication.run(InvestmentApplication.class, args);
+
+    System.out.println("http://localhost:8080/zz/default");
+    System.out.println("http://localhost:8080/ss/default");
   }
 
   public static void testStock() {

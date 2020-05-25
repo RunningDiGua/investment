@@ -129,17 +129,15 @@ public class ExcelUtil {
     if (list != null && list.size() > 0) {
       for (int i = 0; i < list.size(); i++) {
         //      itemVoNum = itemVoNum + 1;
-        if (rowNum == 0) {
-          rowNum = i + rowStart + 1;
-        } else {
-          rowNum = rowNum + 1;
+
+        ZhuanZhaiHttpResp.Cell icell = list.get(i).getCell();
+        if (shuldContinue(icell)) {
+          continue;
         }
+        rowNum = rowNum + 1;
         HSSFRow row = sheet.createRow(rowNum);
         for (int cr = 0; cr < headList.size(); cr++) {
-          ZhuanZhaiHttpResp.Cell icell = list.get(i).getCell();
-          if (shuldContinue(icell)) {
-            continue;
-          }
+
           Object value = ClassUtil.getValue(icell, "get", (String) headList.get(cr).getValue());
           String content = (String) value;
           combineCell(
