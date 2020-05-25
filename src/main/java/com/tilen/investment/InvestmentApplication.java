@@ -35,8 +35,8 @@ public class InvestmentApplication {
     // testStock();
     SpringApplication.run(InvestmentApplication.class, args);
 
-    System.out.println("http://localhost:8080/zz/default");
-    System.out.println("http://localhost:8080/ss/default");
+    System.out.println("<a>http://localhost:8080/zz/default</a>");
+    System.out.println("<a>http://localhost:8080/ss/default</a>");
   }
 
   public static void testStock() {
