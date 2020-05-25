@@ -23,7 +23,7 @@ public class ZhuanZhaiController {
     service.getValue(reqVo, response);
   }
 
-  // @GetMapping("default")
+  @GetMapping("default")
   public void getDefault(HttpServletResponse response) {
     service.getDefault(response);
   }

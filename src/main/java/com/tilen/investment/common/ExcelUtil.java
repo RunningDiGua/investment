@@ -1,10 +1,15 @@
 package com.tilen.investment.common;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tilen.investment.common.excel.ExcelColumnType;
 import com.tilen.investment.common.excel.ExcelColumnTypeHandler;
 import com.tilen.investment.common.excel.format.IFormat;
 import com.tilen.investment.common.excel.format.ZhuanZhaiFormat;
 import com.tilen.investment.zhuanzhai.ZhuanZhaiHttpResp;
+import java.util.Iterator;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +31,7 @@ public class ExcelUtil {
   // private static String testList =
   //
   public static final String SALES_DATA_TITLE = "可转债数据表";
+  public static final String STOCK_DATA_TITLE = "stock数据";
   // public static List<Pair<String, String>> headList = new ArrayList<>();
   //
   // static {
@@ -197,5 +203,90 @@ public class ExcelUtil {
       //      Style.setCell(row, content, firstCol, style);
     }
     return sheet;
+  }
+  /**
+   * 合并详情单元格
+   *
+   * @param sheet
+   * @param row
+   * @param style
+   * @param content
+   * @param firstRow
+   * @param lastRow
+   * @param firstCol
+   * @param lastCol
+   * @param combine
+   * @return
+   */
+  public static HSSFSheet combineCell(
+      HSSFWorkbook workbook,
+      HSSFSheet sheet,
+      HSSFRow row,
+      HSSFCellStyle style,
+      Object content,
+      Integer firstRow,
+      Integer lastRow,
+      Integer firstCol,
+      Integer lastCol,
+      Boolean combine) {
+    if (!Objects.equals(firstRow, lastRow)) {
+      CellRangeAddress range = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
+      sheet.addMergedRegion(range);
+      HSSFCell cellObj = row.createCell(firstCol);
+      ExcelColumnTypeHandler.handle(workbook, cellObj, content);
+      // cellObj.setCellValue(content);
+
+      //      CellStyle cs = workbook.createCellStyle();
+      //      cs.setAlignment(HorizontalAlignment.CENTER);
+      //      cs.setVerticalAlignment(VerticalAlignment.CENTER);
+      //      cellObj.setCellStyle(cs);
+
+    } else {
+      HSSFCell cellObj = row.createCell(firstCol);
+      ExcelColumnTypeHandler.handle(workbook, cellObj, content);
+      // cellObj.setCellValue(content);
+      //      Style.setCell(row, content, firstCol, style);
+    }
+    return sheet;
+  }
+
+  public static HSSFWorkbook getWorkBookFrJson(List<String> heads, String json, String dataPath) {
+    HSSFWorkbook workbook = new HSSFWorkbook();
+    HSSFSheet sheet = workbook.createSheet(STOCK_DATA_TITLE);
+    Integer rowStart = 0;
+
+    // 在索引0的位置创建行(最顶端的行开始的第二行)
+    HSSFRow rowRowName = sheet.createRow(rowStart);
+    // 获取列头样式对象
+    HSSFCellStyle columnTopStyle = Style.getColumnTopStyle(workbook);
+
+    // 将列头设置到sheet的单元格中
+    int columnNum = heads.size();
+    for (int i = 0; i < columnNum; i++) {
+      // 创建列头对应个数的单元格
+      HSSFCell cellRowName = rowRowName.createCell(i);
+      // 设置列头单元格的数据类型
+      cellRowName.setCellType(CellType.STRING);
+      HSSFRichTextString text = new HSSFRichTextString(heads.get(i));
+      // 设置列头单元格的值
+      cellRowName.setCellValue(text);
+      // 设置列头单元格样式
+      cellRowName.setCellStyle(columnTopStyle);
+    }
+    HSSFCellStyle style = Style.getDataStyle(workbook);
+    JSONArray read = (JSONArray) JSONPath.read(json, dataPath);
+    Iterator<Object> iterator = read.iterator();
+    int rowNum = 1;
+    while (iterator.hasNext()) {
+      JSONObject jobj = (JSONObject) iterator.next();
+      HSSFRow row = sheet.createRow(rowNum);
+      for (int cr = 0; cr < heads.size(); cr++) {
+        Object value = jobj.get(heads.get(cr));
+        combineCell(workbook, sheet, row, style, value, rowNum, rowNum, cr, cr, true);
+      }
+      rowNum++;
+    }
+
+    return workbook;
   }
 }

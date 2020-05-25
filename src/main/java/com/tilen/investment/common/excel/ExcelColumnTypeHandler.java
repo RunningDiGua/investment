@@ -1,11 +1,14 @@
 package com.tilen.investment.common.excel;
 
+import java.math.BigDecimal;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class ExcelColumnTypeHandler {
   public static void handle(
       HSSFWorkbook workbook, HSSFCell cell, String value, ExcelColumnType type) {
@@ -23,7 +26,13 @@ public class ExcelColumnTypeHandler {
           cell.setCellValue(transDoublePercent(value));
           break;
         }
-        cell.setCellValue(Double.valueOf(value));
+        try {
+          cell.setCellValue(Double.valueOf(value));
+        } catch (Exception e) {
+          log.error("转化异常", e);
+          cell.setCellType(CellType.STRING);
+          cell.setCellValue(transDate(value));
+        }
         break;
       case date:
         cell.setCellType(CellType.STRING);
@@ -33,6 +42,21 @@ public class ExcelColumnTypeHandler {
         cell.setCellType(CellType.STRING);
         cell.setCellValue(value);
         break;
+    }
+  }
+
+  public static void handle(HSSFWorkbook workbook, HSSFCell cell, Object obj) {
+    if (obj == null) {
+      return;
+    }
+    if (obj instanceof BigDecimal) {
+      cell.setCellType(CellType.NUMERIC);
+      cell.setCellValue(Double.valueOf(obj.toString()));
+      return;
+    }
+    if (obj instanceof String) {
+      cell.setCellType(CellType.STRING);
+      cell.setCellValue(obj.toString());
     }
   }
 
