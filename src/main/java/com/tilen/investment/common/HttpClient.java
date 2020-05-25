@@ -16,13 +16,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.springframework.util.StringUtils;
 
 import static org.apache.http.impl.client.HttpClients.createDefault;
 
@@ -43,7 +38,7 @@ public class HttpClient {
   public static String proxyUrl;
   public static boolean isIdc = false;
 
-  public static String doPut(String url, Map<String, String> params, Map<String, Object> headers)
+  public static String doPost(String url, Map<String, String> params, Map<String, Object> headers)
       throws IOException {
 
     CloseableHttpClient httpClient = createDefault();
@@ -51,7 +46,7 @@ public class HttpClient {
     CloseableHttpResponse response = null;
     String result;
     try {
-      HttpPut httpPut = new HttpPut(url);
+      HttpPost httpPut = new HttpPost(url);
       RequestConfig requestConfig = null;
       if (StringUtils.isEmpty(proxyUrl)) {
         requestConfig =

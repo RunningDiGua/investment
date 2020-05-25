@@ -6,35 +6,26 @@ import com.alibaba.fastjson.JSONPath;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.tilen.investment.common.ExcelUtil;
 import com.tilen.investment.common.JsonMapper;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.util.ArrayUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class InvestmentApplication {
 
   public static void main(String[] args) throws IOException {
     // testStock();
+    // testFilter();
     SpringApplication.run(InvestmentApplication.class, args);
-
+    //
     System.out.println("<a>http://localhost:8080/zz/default</a>");
     System.out.println("<a>http://localhost:8080/ss/default</a>");
   }
@@ -75,5 +66,19 @@ public class InvestmentApplication {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static void testFilter() {
+    List<String> list = new ArrayList<>();
+    list.add("12");
+    list.add("112");
+    list.add("123");
+    list.add("124");
+    List<String> collect =
+        list.stream()
+            .filter(x -> !x.equalsIgnoreCase("12"))
+            .filter(x -> !x.equalsIgnoreCase("112"))
+            .collect(Collectors.toList());
+    System.out.println(collect);
   }
 }
