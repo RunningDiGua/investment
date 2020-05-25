@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,11 +62,21 @@ public class ExcelUtil {
 
   public static void main(String[] args) {
     //
-    try {
-      test();
-    } catch (IOException e) {
-      log.error(e.getMessage());
-      e.printStackTrace();
+    // try {
+    //  test();
+    // } catch (IOException e) {
+    //  log.error(e.getMessage());
+    //  e.printStackTrace();
+    // }
+
+    for (int i = 0; i < 10; i++) {
+      System.out.println("out - " + i);
+      for (int j = 0; j < 10; j++) {
+        if (j < 3) {
+          continue;
+        }
+        System.out.println("inner - " + j);
+      }
     }
   }
 
@@ -128,6 +137,9 @@ public class ExcelUtil {
         HSSFRow row = sheet.createRow(rowNum);
         for (int cr = 0; cr < headList.size(); cr++) {
           ZhuanZhaiHttpResp.Cell icell = list.get(i).getCell();
+          if (shuldContinue(icell)) {
+            continue;
+          }
           Object value = ClassUtil.getValue(icell, "get", (String) headList.get(cr).getValue());
           String content = (String) value;
           combineCell(
@@ -147,6 +159,13 @@ public class ExcelUtil {
     }
     Style.beautifySheet(sheet, headList.size());
     return workbook;
+  }
+
+  private static boolean shuldContinue(ZhuanZhaiHttpResp.Cell cell) {
+    if ("待上市".equalsIgnoreCase(cell.getPrice_tips())) {
+      return true;
+    }
+    return false;
   }
 
   private static String moneyPercentToString(Integer money) {
