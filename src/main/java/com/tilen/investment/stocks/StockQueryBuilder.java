@@ -17,7 +17,8 @@ public class StockQueryBuilder {
   }
 
   public static void main(String[] args) {
-    String roeSuggest = getROESuggest(2016, 5, 20);
+    LocalDateTime now = LocalDateTime.now();
+    String roeSuggest = getROESuggest(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
     // 2012年到2018年ROE≥15%,2019年9月30日ROE≥11.25%,上市时间大于5年,行业,2018年营收增长率,2018年净利润增长率,2019年9月30日营收增长率,2019年9月30日净利润增长率,2015年到2018年营业收入,2015年到2018年应收帐款,2015年到2018年的存货,2016年到2018年的流动比率.
     System.out.println("建议的爱问财搜索条件为：");
     System.out.println(roeSuggest);

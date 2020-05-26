@@ -3,10 +3,6 @@ package com.tilen.investment;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.tilen.investment.common.ExcelUtil;
-import com.tilen.investment.common.JsonMapper;
-import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.boot.SpringApplication;
@@ -15,14 +11,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class InvestmentApplication {
 
   public static void main(String[] args) throws IOException {
-    // testStock();
+    testStock();
     // testFilter();
     SpringApplication.run(InvestmentApplication.class, args);
     //
@@ -37,23 +36,29 @@ public class InvestmentApplication {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    JSONArray read = (JSONArray) JSONPath.read(toString, "data/config/columns");
+    List<String> list = new ArrayList<>();
+    for (int i = 0; i < read.size(); i++) {
 
-    JsonNode json = JsonMapper.getNode(toString);
-    JsonNode jsonNode = json.get("data").get("data");
-    JsonNode jsonNode1 = jsonNode.get(0);
-    Iterator<String> stringIterator = jsonNode1.fieldNames();
-    List<String> list = IteratorUtils.toList(stringIterator);
-    System.out.println(stringIterator);
-    JSONArray read = (JSONArray) JSONPath.read(toString, "data/data");
+      JSONObject o = (JSONObject) read.get(i);
+      JSONArray tilte_children = (JSONArray) o.get("tilte_children");
+      if (tilte_children.size() == 0) {
+        list.add();
+      }
+      JSONArray data_index = (JSONArray) o.get("data_index");
+
+      int mm = data_index.size();
+      for (int j = 0; j < data_index.size(); j++) {
+        list.add(data_index.get(j).toString());
+      }
+    }
     JSONObject o = (JSONObject) read.get(0);
     Collection<Object> values = o.values();
     Set<?> objects = JSONPath.keySet(read.getJSONObject(0), "/");
     System.out.println(objects);
-
-    HSSFWorkbook workBookFrJson = ExcelUtil.getWorkBookFrJson(list, toString, "data/data");
-    outPut(workBookFrJson, "ceshi.xls", "/Users/wangchangdong/Desktop");
-    // System.out.println(workBookFrJson);
   }
+
+  public static void refresh(List<String> list, JSONObject jsonObject) {}
 
   public static void outPut(HSSFWorkbook workbook, String fileName, String path) {
     File file = new File(path + "/" + fileName);

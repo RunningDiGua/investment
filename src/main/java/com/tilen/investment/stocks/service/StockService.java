@@ -86,6 +86,7 @@ public class StockService {
             .filter(x -> !x.contains("marketId"))
             .filter(x -> !x.contains("上市天数"))
             .collect(Collectors.toList());
+
     return newList;
   }
 }
