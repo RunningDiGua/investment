@@ -47,8 +47,8 @@ echo "打包成功"
 
 ps -ef|grep investment|grep -v grep|grep -v guard|awk '{print $2}'|xargs kill -9
 
+open ./src/main/java/com/tilen/investment/doc/
 java -Xms1024m -Xmx1024m -jar $projectPath
-
 if [ "$preBranch" != "master" ]; then
   git checkout -
   echo "切换回原分支：$preBranch"
