@@ -6,7 +6,7 @@
 #    exit;
 #fi
 userName=$(echo $USER)
-projectPath="/Users/wangchangdong/tilenmac/read/investment/target/investment-0.0.1-SNAPSHOT.jar"
+projectPath="/Users/tilenmac/treading/investment/target/investment-0.0.1-SNAPSHOT.jar"
 if [ "$userName" == "wangchangdong" ]; then
   projectPath="/Users/wangchangdong/tcoding/read/investment/target/investment-0.0.1-SNAPSHOT.jar"
 fi
