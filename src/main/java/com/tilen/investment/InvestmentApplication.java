@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class InvestmentApplication {
 
   public static void main(String[] args) throws IOException {
-    testStock();
+    // testStock();
     // testFilter();
     SpringApplication.run(InvestmentApplication.class, args);
     //
@@ -41,21 +41,22 @@ public class InvestmentApplication {
     for (int i = 0; i < read.size(); i++) {
 
       JSONObject o = (JSONObject) read.get(i);
-      JSONArray tilte_children = (JSONArray) o.get("tilte_children");
-      if (tilte_children.size() == 0) {
-        list.add();
-      }
-      JSONArray data_index = (JSONArray) o.get("data_index");
-
-      int mm = data_index.size();
-      for (int j = 0; j < data_index.size(); j++) {
-        list.add(data_index.get(j).toString());
+      JSONArray tilte_children = (JSONArray) o.get("title_children");
+      if (tilte_children == null || tilte_children.size() == 0) {
+        JSONArray data_index = (JSONArray) o.get("data_index");
+        int mm = data_index.size();
+        for (int j = 0; j < data_index.size(); j++) {
+          list.add(data_index.get(j).toString());
+        }
+      } else {
+        for (int k = 0; k < tilte_children.size(); k++) {
+          JSONObject o1 = (JSONObject) tilte_children.get(k);
+          JSONArray array = (JSONArray) o1.get("data_index");
+          list.add(array.get(0).toString());
+        }
       }
     }
-    JSONObject o = (JSONObject) read.get(0);
-    Collection<Object> values = o.values();
-    Set<?> objects = JSONPath.keySet(read.getJSONObject(0), "/");
-    System.out.println(objects);
+    System.out.println(list);
   }
 
   public static void refresh(List<String> list, JSONObject jsonObject) {}
